@@ -12,7 +12,6 @@ import java.util.List;
         unmappedSourcePolicy = ReportingPolicy.IGNORE
 )
 public interface IObjectEntityMapper {
-
     ObjectEntity toEntity(ObjectModel user);
     ObjectModel toObjectModel(ObjectEntity objectEntity);
     List<ObjectModel> toObjectModelList(List<ObjectEntity> userEntityList);
