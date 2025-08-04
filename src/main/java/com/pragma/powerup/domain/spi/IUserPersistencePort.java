@@ -7,4 +7,5 @@ import java.util.List;
 public interface IUserPersistencePort {
     void saveUser(UserModel user);
     List<UserModel> getAllUsers();
+    UserModel getUserById(Integer id);
 }

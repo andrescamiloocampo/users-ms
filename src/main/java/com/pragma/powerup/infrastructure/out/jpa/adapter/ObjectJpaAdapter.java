@@ -18,9 +18,8 @@ public class ObjectJpaAdapter implements IObjectPersistencePort {
 
 
     @Override
-    public ObjectModel saveObject(ObjectModel objectModel) {
-        ObjectEntity objectEntity = objectRepository.save(objectEntityMapper.toEntity(objectModel));
-        return objectEntityMapper.toObjectModel(objectEntity);
+    public void saveObject(ObjectModel objectModel) {
+        objectRepository.save(objectEntityMapper.toEntity(objectModel));
     }
 
     @Override
