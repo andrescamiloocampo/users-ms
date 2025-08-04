@@ -24,4 +24,10 @@ public class UserJpaAdapter implements IUserPersistencePort {
     public List<UserModel> getAllUsers() {
         return userEntityMapper.toUserModelList(userRepository.findAll());
     }
+
+    @Override
+    public UserModel getUserById(Integer id) {
+        return userEntityMapper.toUserModel(userRepository.findById(id).orElseThrow());
+    }
+
 }

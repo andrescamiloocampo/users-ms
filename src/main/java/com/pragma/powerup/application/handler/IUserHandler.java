@@ -9,4 +9,5 @@ public interface IUserHandler {
     void saveUser(UserRequestDto user);
     void saveOwner(UserRequestDto user);
     List<UserResponseDto> getAllUsers();
+    UserResponseDto getUserById(Integer id);
 }

@@ -1,5 +1,8 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
+import lombok.Getter;
+
+@Getter
 public enum ExceptionResponse {
     NO_DATA_FOUND("No data found for the requested petition"),
     USER_ALREADY_EXISTS("User already exists"),
@@ -16,7 +19,4 @@ public enum ExceptionResponse {
         this.message = message;
     }
 
-    public String getMessage() {
-        return this.message;
-    }
 }
