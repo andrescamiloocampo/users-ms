@@ -35,7 +35,7 @@ public class UserUseCase implements IUserServicePort {
     public void saveOwner(UserModel user) {
         validateUser(user);
         RoleModel ownerRole = rolePersistencePort.findByName("OWNER");
-        user.setRole(ownerRole);
+        user.setRoles(List.of(ownerRole));
         userPersistencePort.saveUser(user);
     }
 
