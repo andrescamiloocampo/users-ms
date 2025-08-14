@@ -2,7 +2,6 @@ package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.domain.model.UserModel;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
-import com.pragma.powerup.infrastructure.out.jpa.entity.UserEntity;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IUserEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,11 @@ public class UserJpaAdapter implements IUserPersistencePort {
     @Override
     public UserModel getUserById(Integer id) {
         return userEntityMapper.toUserModel(userRepository.findById(id).orElseThrow());
+    }
+
+    @Override
+    public UserModel getUserByEmail(String email){
+        return userEntityMapper.toUserModel(userRepository.getByEmail(email));
     }
 
 }

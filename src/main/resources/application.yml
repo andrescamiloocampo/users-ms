@@ -17,5 +17,14 @@ spring:
       user:
         name: root
         password: root
+
+application:
+  security:
+    jwt:
+      secret-key: DnkM6Yeq/oVtI4WHmTHqCUSpFZ4eNvPqI7xnsq1upr4=
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
 appDescription: "Pragma Powerup"
 appVersion: "1.0.0"
