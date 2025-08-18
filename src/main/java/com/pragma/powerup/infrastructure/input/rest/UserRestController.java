@@ -11,8 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import lombok.RequiredArgsConstructor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,24 +22,24 @@ import org.springframework.web.bind.annotation.*;
 public class UserRestController {
     private final IUserHandler userHandler;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
-
-    @Operation(summary = "Create Owner")
+    @Operation(
+            summary = "Create User by role",
+            description = "Allows you to create a user by specifying the role to be assigned" +
+                    "The creation rules are as follows:\n"+
+                    "- Only an **ADMIN** can create users with the **OWNER** role. \n"+
+                    "- Only an **OWNER** can create users with the **EMPLOYEE** role."
+    )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Owner created", content = @Content),
-            @ApiResponse(responseCode = "409", description = "User already exists", content = @Content)
+            @ApiResponse(responseCode = "409", description = "User already exists", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden, user does not have permission to create with this role", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/create-owner")
-    public ResponseEntity<Void> saveOwner(@RequestBody UserRequestDto userRequestDto) {
-        userHandler.saveOwner(userRequestDto);
+    @PreAuthorize("(#role == 'OWNER' and hasAuthority('ADMIN')) or (#role == 'EMPLOYEE' and hasAuthority('OWNER'))")
+    @PostMapping("/{role}")
+    public ResponseEntity<Void> saveUser(@RequestBody UserRequestDto userRequestDto,@PathVariable String role) {
+        userHandler.saveUser(userRequestDto,role.toUpperCase());
         return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping("/create-employee")
-    public String saveEmployee(){
-        return "Hello owner";
     }
 
     @Operation(summary = "Get user by ID")

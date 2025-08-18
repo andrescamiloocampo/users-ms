@@ -1,10 +1,7 @@
 package com.pragma.powerup.domain.usecase;
 
 import com.pragma.powerup.domain.api.IUserServicePort;
-import com.pragma.powerup.domain.exception.InvalidDocumentException;
-import com.pragma.powerup.domain.exception.InvalidEmailException;
-import com.pragma.powerup.domain.exception.InvalidPhoneException;
-import com.pragma.powerup.domain.exception.UnderageException;
+import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.RoleModel;
 import com.pragma.powerup.domain.model.UserModel;
 import com.pragma.powerup.domain.spi.IRolePersistencePort;
@@ -26,16 +23,16 @@ public class UserUseCase implements IUserServicePort {
     }
 
     @Override
-    public void saveUser(UserModel user) {
-        validateUser(user);
-        userPersistencePort.saveUser(user);
-    }
+    public void saveUser(UserModel user, String role) {
+        boolean userExists = userPersistencePort.existsByEmail(user.getEmail());
 
-    @Override
-    public void saveOwner(UserModel user) {
+        if(userExists){
+            throw new UserAlreadyExistsException();
+        }
+
         validateUser(user);
-        RoleModel ownerRole = rolePersistencePort.findByName("OWNER");
-        user.setRoles(List.of(ownerRole));
+        RoleModel userRole = rolePersistencePort.findByName(role);
+        user.setRoles(List.of(userRole));
         userPersistencePort.saveUser(user);
     }
 

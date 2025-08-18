@@ -23,15 +23,9 @@ public class UserHandler implements IUserHandler {
     private final IUserResponseMapper userResponseMapper;
 
     @Override
-    public void saveUser(UserRequestDto userRequestDto) {
+    public void saveUser(UserRequestDto userRequestDto,String role) {
         UserModel userModel = userRequestMapper.toUser(userRequestDto);
-        userServicePort.saveUser(userModel);
-    }
-
-    @Override
-    public void saveOwner(UserRequestDto userRequestDto) {
-        UserModel userModel = userRequestMapper.toUser(userRequestDto);
-        userServicePort.saveOwner(userModel);
+        userServicePort.saveUser(userModel,role);
     }
 
     @Override
