@@ -6,8 +6,7 @@ import com.pragma.powerup.application.dto.response.UserResponseDto;
 import java.util.List;
 
 public interface IUserHandler {
-    void saveUser(UserRequestDto user);
-    void saveOwner(UserRequestDto user);
+    void saveUser(UserRequestDto user, String role);
     List<UserResponseDto> getAllUsers();
     UserResponseDto getUserById(Integer id);
 }

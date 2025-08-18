@@ -7,7 +7,7 @@ import com.pragma.powerup.domain.exception.InvalidPhoneException;
 import com.pragma.powerup.domain.exception.UnderageException;
 import com.pragma.powerup.infrastructure.exception.NoDataFoundException;
 import com.pragma.powerup.infrastructure.exception.RoleAlreadyExistsException;
-import com.pragma.powerup.infrastructure.exception.UserAlreadyExistsException;
+import com.pragma.powerup.domain.exception.UserAlreadyExistsException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Collections.singletonMap(MESSAGE, ExceptionResponse.USER_ALREADY_EXISTS.getMessage()));
     }
 

@@ -1,9 +1,6 @@
 package com.pragma.powerup.domain.usecase;
 
-import com.pragma.powerup.domain.exception.InvalidDocumentException;
-import com.pragma.powerup.domain.exception.InvalidEmailException;
-import com.pragma.powerup.domain.exception.InvalidPhoneException;
-import com.pragma.powerup.domain.exception.UnderageException;
+import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.RoleModel;
 import com.pragma.powerup.domain.model.UserModel;
 import com.pragma.powerup.domain.spi.IRolePersistencePort;
@@ -31,29 +28,32 @@ class UserUseCaseTest {
     }
 
     private UserModel validUser() {
-        RoleModel validRole = new RoleModel(1, "OWNER", "Owner access");
-        return new UserModel(1, "John", "Cardona", 12813289, "+57303451248", LocalDate.of(1995, 2, 26), "john@gmail.com", "password", validRole);
+        return new UserModel(1, "John", "Cardona", 12813289,
+                "+57303451248", LocalDate.of(1995, 2, 26),
+                "john@gmail.com", "password", List.of());
     }
 
     @Test
     void saveUser_ShouldCallPersistence_WhenUserIsValid() {
         UserModel user = validUser();
+        RoleModel ownerRole = new RoleModel(1, "OWNER", "Owner access");
 
-        userUseCase.saveUser(user);
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+        when(rolePersistencePort.findByName("OWNER")).thenReturn(ownerRole);
 
+        userUseCase.saveUser(user, "OWNER");
+
+        assertTrue(user.getRoles().stream().anyMatch(r -> r.getName().equals("OWNER")));
         verify(userPersistencePort, times(1)).saveUser(user);
     }
 
     @Test
-    void saveOwner_ShouldAssignOwnerRole_AndSaveUser() {
+    void saveUser_ShouldThrowUserAlreadyExistsException_WhenEmailAlreadyExists() {
         UserModel user = validUser();
-        RoleModel ownerRole = new RoleModel(1, "OWNER", "OWNER ACCESS");
-        when(rolePersistencePort.findByName("OWNER")).thenReturn(ownerRole);
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(true);
 
-        userUseCase.saveOwner(user);
-
-        assertEquals("OWNER", user.getRole().getName());
-        verify(userPersistencePort).saveUser(user);
+        assertThrows(UserAlreadyExistsException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        verify(userPersistencePort, never()).saveUser(any());
     }
 
     @Test
@@ -61,7 +61,9 @@ class UserUseCaseTest {
         UserModel user = validUser();
         user.setEmail("invalid-email");
 
-        assertThrows(InvalidEmailException.class, () -> userUseCase.saveUser(user));
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+
+        assertThrows(InvalidEmailException.class, () -> userUseCase.saveUser(user, "OWNER"));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -70,16 +72,20 @@ class UserUseCaseTest {
         UserModel user = validUser();
         user.setIdentityDocument(-1);
 
-        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user));
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+
+        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user, "OWNER"));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
     @Test
-    void saveUser_ShouldThrowInvalidDocumentException_WhenDocumentIsNotNumeric() {
+    void saveUser_ShouldThrowInvalidDocumentException_WhenDocumentIsZero() {
         UserModel user = validUser();
         user.setIdentityDocument(0);
 
-        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user));
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+
+        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user, "OWNER"));
     }
 
     @Test
@@ -87,7 +93,9 @@ class UserUseCaseTest {
         UserModel user = validUser();
         user.setPhone("abc123");
 
-        assertThrows(InvalidPhoneException.class, () -> userUseCase.saveUser(user));
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+
+        assertThrows(InvalidPhoneException.class, () -> userUseCase.saveUser(user, "OWNER"));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -96,7 +104,9 @@ class UserUseCaseTest {
         UserModel user = validUser();
         user.setBirthdate(LocalDate.now().minusYears(17));
 
-        assertThrows(UnderageException.class, () -> userUseCase.saveUser(user));
+        when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
+
+        assertThrows(UnderageException.class, () -> userUseCase.saveUser(user, "OWNER"));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -109,5 +119,16 @@ class UserUseCaseTest {
 
         assertEquals(2, result.size());
         verify(userPersistencePort).getAllUsers();
+    }
+
+    @Test
+    void getUserById_ShouldReturnUserFromPersistence() {
+        UserModel user = validUser();
+        when(userPersistencePort.getUserById(1)).thenReturn(user);
+
+        UserModel result = userUseCase.getUserById(1);
+
+        assertEquals(user, result);
+        verify(userPersistencePort).getUserById(1);
     }
 }
