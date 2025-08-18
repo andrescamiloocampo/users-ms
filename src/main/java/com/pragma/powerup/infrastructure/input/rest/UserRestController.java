@@ -30,7 +30,7 @@ public class UserRestController {
                     "- Only an **OWNER** can create users with the **EMPLOYEE** role."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Owner created", content = @Content),
+            @ApiResponse(responseCode = "201", description = "User created", content = @Content),
             @ApiResponse(responseCode = "409", description = "User already exists", content = @Content),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden, user does not have permission to create with this role", content = @Content)
@@ -39,6 +39,20 @@ public class UserRestController {
     @PostMapping("/{role}")
     public ResponseEntity<Void> saveUser(@RequestBody UserRequestDto userRequestDto,@PathVariable String role) {
         userHandler.saveUser(userRequestDto,role.toUpperCase());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Create Customer",
+            description = "No previous authorization required"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Customer created", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)
+    })
+    @PostMapping("/register")
+    public ResponseEntity<Void> registerCustomer(@RequestBody UserRequestDto userRequestDto){
+        userHandler.saveUser(userRequestDto,"CUSTOMER");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
