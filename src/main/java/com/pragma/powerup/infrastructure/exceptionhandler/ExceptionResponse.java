@@ -12,7 +12,8 @@ public enum ExceptionResponse {
     INVALID_PHONE("The provided phone number is not valid"),
     UNDERAGE("User must be of legal age"),
     DOMAIN_EXCEPTION("A domain error has occurred"),
-    INVALID_CREDENTIALS("Invalid credentials");
+    INVALID_CREDENTIALS("Invalid credentials"),
+    INVALID_USER("User not allowed to perform this action");
 
     private final String message;
 

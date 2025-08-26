@@ -4,11 +4,14 @@ import com.pragma.powerup.domain.api.IObjectServicePort;
 import com.pragma.powerup.domain.api.IRoleServicePort;
 import com.pragma.powerup.domain.api.IUserServicePort;
 import com.pragma.powerup.domain.spi.IObjectPersistencePort;
+import com.pragma.powerup.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.domain.spi.IRolePersistencePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.domain.usecase.ObjectUseCase;
 import com.pragma.powerup.domain.usecase.RoleUseCase;
 import com.pragma.powerup.domain.usecase.UserUseCase;
+import com.pragma.powerup.infrastructure.out.feign.adapter.RestaurantEmployeeFeignAdapter;
+import com.pragma.powerup.infrastructure.out.feign.client.PlazaFeignClient;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.ObjectJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RoleJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.UserJpaAdapter;
@@ -31,6 +34,7 @@ public class BeanConfiguration {
     private final IRoleEntityMapper roleEntityMapper;
     private final IUserRepository userRepository;
     private final IUserEntityMapper userEntityMapper;
+    private final PlazaFeignClient plazaFeignClient;
 
     @Bean
     public IObjectPersistencePort objectPersistencePort() {
@@ -58,7 +62,12 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort() {
+        return new RestaurantEmployeeFeignAdapter(plazaFeignClient);
+    }
+
+    @Bean
     public IUserServicePort userServicePort() {
-        return new UserUseCase(userPersistencePort(),rolePersistencePort());
+        return new UserUseCase(userPersistencePort(),rolePersistencePort(), restaurantEmployeePersistencePort());
     }
 }
