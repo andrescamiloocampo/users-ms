@@ -1,13 +1,8 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
-import com.pragma.powerup.domain.exception.DomainException;
-import com.pragma.powerup.domain.exception.InvalidDocumentException;
-import com.pragma.powerup.domain.exception.InvalidEmailException;
-import com.pragma.powerup.domain.exception.InvalidPhoneException;
-import com.pragma.powerup.domain.exception.UnderageException;
+import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.infrastructure.exception.NoDataFoundException;
 import com.pragma.powerup.infrastructure.exception.RoleAlreadyExistsException;
-import com.pragma.powerup.domain.exception.UserAlreadyExistsException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,5 +70,11 @@ public class ControllerAdvisor {
     public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Collections.singletonMap(MESSAGE, ExceptionResponse.INVALID_CREDENTIALS.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidUserException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidUserException(InvalidUserException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Collections.singletonMap(MESSAGE, ExceptionResponse.INVALID_USER.getMessage()));
     }
 }

@@ -3,6 +3,7 @@ package com.pragma.powerup.domain.usecase;
 import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.RoleModel;
 import com.pragma.powerup.domain.model.UserModel;
+import com.pragma.powerup.domain.spi.IRestaurantEmployeePersistencePort;
 import com.pragma.powerup.domain.spi.IRolePersistencePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,13 +19,15 @@ class UserUseCaseTest {
 
     private IUserPersistencePort userPersistencePort;
     private IRolePersistencePort rolePersistencePort;
+    private IRestaurantEmployeePersistencePort restaurantEmployeePersistencePort;
     private UserUseCase userUseCase;
 
     @BeforeEach
     void setUp() {
         userPersistencePort = mock(IUserPersistencePort.class);
         rolePersistencePort = mock(IRolePersistencePort.class);
-        userUseCase = new UserUseCase(userPersistencePort, rolePersistencePort);
+        restaurantEmployeePersistencePort = mock(IRestaurantEmployeePersistencePort.class);
+        userUseCase = new UserUseCase(userPersistencePort, rolePersistencePort,restaurantEmployeePersistencePort);
     }
 
     private UserModel validUser() {
@@ -41,7 +44,7 @@ class UserUseCaseTest {
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
         when(rolePersistencePort.findByName("OWNER")).thenReturn(ownerRole);
 
-        userUseCase.saveUser(user, "OWNER");
+        userUseCase.saveUser(user, "OWNER",0, 0);
 
         assertTrue(user.getRoles().stream().anyMatch(r -> r.getName().equals("OWNER")));
         verify(userPersistencePort, times(1)).saveUser(user);
@@ -52,7 +55,7 @@ class UserUseCaseTest {
         UserModel user = validUser();
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(true);
 
-        assertThrows(UserAlreadyExistsException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        assertThrows(UserAlreadyExistsException.class, () -> userUseCase.saveUser(user, "OWNER",0, 0));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -63,7 +66,7 @@ class UserUseCaseTest {
 
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
 
-        assertThrows(InvalidEmailException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        assertThrows(InvalidEmailException.class, () -> userUseCase.saveUser(user, "OWNER",0, 0));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -74,7 +77,7 @@ class UserUseCaseTest {
 
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
 
-        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user, "OWNER",0, 0));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -85,7 +88,7 @@ class UserUseCaseTest {
 
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
 
-        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        assertThrows(InvalidDocumentException.class, () -> userUseCase.saveUser(user, "OWNER",0, 0));
     }
 
     @Test
@@ -95,7 +98,7 @@ class UserUseCaseTest {
 
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
 
-        assertThrows(InvalidPhoneException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        assertThrows(InvalidPhoneException.class, () -> userUseCase.saveUser(user, "OWNER",0, 0));
         verify(userPersistencePort, never()).saveUser(any());
     }
 
@@ -106,7 +109,7 @@ class UserUseCaseTest {
 
         when(userPersistencePort.existsByEmail(user.getEmail())).thenReturn(false);
 
-        assertThrows(UnderageException.class, () -> userUseCase.saveUser(user, "OWNER"));
+        assertThrows(UnderageException.class, () -> userUseCase.saveUser(user, "OWNER",0, 0));
         verify(userPersistencePort, never()).saveUser(any());
     }
 

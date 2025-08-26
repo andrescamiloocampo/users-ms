@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,8 +26,8 @@ public class UserRestController {
     @Operation(
             summary = "Create User by role",
             description = "Allows you to create a user by specifying the role to be assigned" +
-                    "The creation rules are as follows:\n"+
-                    "- Only an **ADMIN** can create users with the **OWNER** role. \n"+
+                    "The creation rules are as follows:\n" +
+                    "- Only an **ADMIN** can create users with the **OWNER** role. \n" +
                     "- Only an **OWNER** can create users with the **EMPLOYEE** role."
     )
     @ApiResponses(value = {
@@ -37,8 +38,12 @@ public class UserRestController {
     })
     @PreAuthorize("(#role == 'OWNER' and hasAuthority('ADMIN')) or (#role == 'EMPLOYEE' and hasAuthority('OWNER'))")
     @PostMapping("/{role}")
-    public ResponseEntity<Void> saveUser(@RequestBody UserRequestDto userRequestDto,@PathVariable String role) {
-        userHandler.saveUser(userRequestDto,role.toUpperCase());
+    public ResponseEntity<Void> saveUser(@RequestBody UserRequestDto userRequestDto,
+                                         @PathVariable String role,
+                                         @RequestParam(defaultValue = "0",required = false) int bid,
+                                         Authentication authentication) {
+        int publisherId = Integer.parseInt(authentication.getPrincipal().toString());
+        userHandler.saveUser(userRequestDto, role.toUpperCase(), publisherId, bid);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -51,8 +56,8 @@ public class UserRestController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content)
     })
     @PostMapping("/register")
-    public ResponseEntity<Void> registerCustomer(@RequestBody UserRequestDto userRequestDto){
-        userHandler.saveUser(userRequestDto,"CUSTOMER");
+    public ResponseEntity<Void> registerCustomer(@RequestBody UserRequestDto userRequestDto) {
+        userHandler.saveUser(userRequestDto, "CUSTOMER", 0, 0);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
