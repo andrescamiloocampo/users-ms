@@ -66,7 +66,7 @@ public class UserRestController {
             @ApiResponse(responseCode = "200", description = "User found", content = @Content),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content)
     })
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','OWNER','EMPLOYEE')")
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Integer id) {
         UserResponseDto user = userHandler.getUserById(id);
