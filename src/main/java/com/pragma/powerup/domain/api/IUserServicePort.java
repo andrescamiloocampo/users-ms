@@ -8,4 +8,5 @@ public interface IUserServicePort {
     void saveUser(UserModel user,String role,int publisherId,int businessId);
     List<UserModel> getAllUsers();
     UserModel getUserById(Integer id);
+    List<UserModel> getUsersByRole(String roleName);
 }

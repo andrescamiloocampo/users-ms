@@ -4,7 +4,7 @@ import com.pragma.powerup.infrastructure.out.jpa.entity.RoleEntity;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRoleRepository;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 
 @Component

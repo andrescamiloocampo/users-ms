@@ -34,6 +34,12 @@ public class UserHandler implements IUserHandler {
     }
 
     @Override
+    public List<UserResponseDto> getUsersByRole(String roleName) {
+        List<UserModel> users = userServicePort.getUsersByRole(roleName);
+        return userResponseMapper.toResponseList(users);
+    }
+
+    @Override
     public UserResponseDto getUserById(Integer id) {
         return userResponseMapper.toResponse(userServicePort.getUserById(id));
     }

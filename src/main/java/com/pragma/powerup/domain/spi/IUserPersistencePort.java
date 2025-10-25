@@ -10,4 +10,5 @@ public interface IUserPersistencePort {
     List<UserModel> getAllUsers();
     UserModel getUserById(Integer id);
     UserModel getUserByEmail(String email);
+    List<UserModel> getUsersByRoleName(String roleName);
 }

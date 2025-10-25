@@ -6,6 +6,7 @@ import com.pragma.powerup.application.handler.IUserHandler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -71,5 +74,19 @@ public class UserRestController {
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Integer id) {
         UserResponseDto user = userHandler.getUserById(id);
         return ResponseEntity.ok(user);
+    }
+
+    @Operation(summary = "Get users by role name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "No users found with this role",
+                    content = @Content)
+    })
+    @GetMapping("/role/{roleName}")
+    public ResponseEntity<List<UserResponseDto>> getUsersByRole(
+            @PathVariable String roleName) {
+        return ResponseEntity.ok(userHandler.getUsersByRole(roleName));
     }
 }
