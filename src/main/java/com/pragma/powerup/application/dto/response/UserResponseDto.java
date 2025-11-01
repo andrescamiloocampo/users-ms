@@ -14,5 +14,6 @@ public class UserResponseDto {
     private String lastname;
     private String phone;
     private LocalDate birthdate;
+    private String email;
     private List<RoleResponseDto> roles;
 }
